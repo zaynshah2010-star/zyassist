@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reception AI</title>
+<style>
+:root{--bg:#17191b;--panel:#1f2326;--panel2:#262b2f;--line:#33393e;--tx:#f4f6f5;--mut:#9aa5a0;--em:#34d399;--emd:#0f3d2e;--warn:#f5b84a;--bad:#f87171;--blue:#7cb7ff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root:not([data-theme="dark"]){}
+*{box-sizing:border-box}html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;background:var(--bg);color:var(--tx);font:15px/1.5 "Segoe UI",system-ui,-apple-system,Roboto,Tahoma,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+.app{display:flex;height:100%;min-height:100vh}
+aside{width:236px;background:var(--panel);border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;gap:6px;flex-shrink:0;transition:transform .25s}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;padding:0 8px 18px}
+.logo{width:30px;height:30px;border-radius:9px;background:var(--em);color:#06281d;display:grid;place-items:center;font-weight:800}
+nav button{display:flex;width:100%;align-items:center;gap:10px;background:none;border:0;padding:10px 12px;border-radius:10px;color:var(--mut);cursor:pointer;text-align:left;transition:.15s}
+nav button:hover{background:var(--panel2);color:var(--tx)}
+nav button.on{background:var(--emd);color:var(--em)}
+nav .badge{margin-left:auto;background:var(--em);color:#06281d;border-radius:20px;font-size:12px;padding:0 7px;font-weight:700}
+.side-foot{margin-top:auto;display:flex;flex-direction:column;gap:10px;font-size:12px;color:var(--mut)}
+main{flex:1;min-width:0;overflow-y:auto;padding:26px 30px 60px}
+.top{display:none}
+h1{font-size:26px;margin:0 0 4px;letter-spacing:-.02em}h2{font-size:17px;margin:0 0 12px}
+.sub{color:var(--mut);margin:0 0 22px}
+.tag{display:inline-block;font-size:12px;padding:2px 9px;border-radius:20px;border:1px solid var(--line);color:var(--mut)}
+.tag.em{color:var(--em);border-color:#1f6b4f;background:var(--emd)}.tag.warn{color:var(--warn);border-color:#6b5320;background:#2e2610}.tag.bad{color:var(--bad);border-color:#6b2a2a;background:#2e1616}.tag.blue{color:var(--blue);border-color:#2b4b73;background:#14243a}
+.grid{display:grid;gap:14px}.g4{grid-template-columns:repeat(4,1fr)}.g2{grid-template-columns:1fr 1fr}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+.stat b{display:block;font-size:34px;letter-spacing:-.03em;line-height:1.1}.stat span{color:var(--mut);font-size:13px}
+.stat.hot b{color:var(--em)}
+.btn{background:var(--em);color:#06281d;border:0;border-radius:10px;padding:9px 16px;font-weight:600;cursor:pointer;transition:.15s}
+.btn:hover{filter:brightness(1.1)}.btn.ghost{background:none;border:1px solid var(--line);color:var(--tx)}.btn.ghost:hover{background:var(--panel2)}.btn.sm{padding:5px 11px;font-size:13px}.btn.danger{background:none;border:1px solid #6b2a2a;color:var(--bad)}
+:focus-visible{outline:2px solid var(--em);outline-offset:2px}
+input,select,textarea{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:9px 11px;width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--em)}
+label{display:block;font-size:13px;color:var(--mut);margin:12px 0 5px}
+.row{display:flex;gap:10px;align-items:center}.row>*{min-width:0}
+.wrap{flex-wrap:wrap}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--line);font-size:14px}th{color:var(--mut);font-weight:500;font-size:13px}
+.scroll{overflow-x:auto}
+.bar{display:flex;height:10px;border-radius:6px;overflow:hidden;background:var(--panel2);margin:10px 0}.bar i{display:block;transition:width .4s}
+.empty{text-align:center;color:var(--mut);padding:34px 10px;border:1px dashed var(--line);border-radius:12px}
+.chat{display:grid;grid-template-columns:1fr 290px;gap:14px;height:calc(100vh - 170px);min-height:460px}
+.chatbox{display:flex;flex-direction:column;padding:0;overflow:hidden}
+.msgs{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:10px}
+.m{max-width:80%;padding:10px 14px;border-radius:14px;white-space:pre-wrap;animation:pop .2s}
+.m.c{align-self:flex-end;background:var(--em);color:#06281d;border-bottom-right-radius:4px}
+.m.b{align-self:flex-start;background:var(--panel2);border-bottom-left-radius:4px}
+.m.s{align-self:flex-start;background:#14243a;border:1px solid #2b4b73}
+.m small{display:block;opacity:.65;font-size:11px;margin-bottom:2px}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.compose{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;padding:0 12px 10px}
+.chips button{background:none;border:1px solid var(--line);color:var(--mut);border-radius:20px;padding:3px 11px;font-size:13px;cursor:pointer}.chips button:hover{color:var(--em);border-color:var(--em)}
+.edrow{display:grid;grid-template-columns:2fr 1fr 1fr 1.5fr auto;gap:8px;margin-bottom:8px}
+.faq{display:grid;grid-template-columns:1fr 1.6fr auto;gap:8px;margin-bottom:8px}
+.hrs{display:grid;grid-template-columns:100px 1fr 1fr 80px;gap:8px;align-items:center;margin-bottom:6px}
+.conv{display:grid;grid-template-columns:320px 1fr;gap:14px}
+.ci{padding:12px;border-radius:10px;cursor:pointer;border:1px solid transparent}.ci:hover,.ci.on{background:var(--panel2);border-color:var(--line)}
+.toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translate(-50%,30px);background:var(--em);color:#06281d;padding:10px 18px;border-radius:10px;font-weight:600;opacity:0;pointer-events:none;transition:.25s;z-index:50;max-width:90%}
+.toast.show{opacity:1;transform:translate(-50%,0)}.toast.err{background:var(--bad);color:#2b0a0a}
+.banner{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--mut);margin-bottom:18px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--bad);display:inline-block;margin-right:6px}
+@media(max-width:860px){
+.app{display:block}aside{position:fixed;z-index:20;top:0;bottom:0;left:0;transform:translateX(-100%);padding-top:calc(20px + env(safe-area-inset-top,0px))}aside.open{transform:none}
+.top{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:10}
+.top button{background:none;border:1px solid var(--line);border-radius:8px;padding:4px 10px;font-size:18px;cursor:pointer}
+main{padding:18px 16px 60px;overflow:visible}.g4{grid-template-columns:1fr 1fr}.g2,.conv{grid-template-columns:1fr}
+.chat{grid-template-columns:1fr;height:auto}.chatbox{height:70vh}
+.edrow{grid-template-columns:1fr 1fr}.edrow input:first-child{grid-column:1/-1}.faq{grid-template-columns:1fr}.hrs{grid-template-columns:80px 1fr 1fr 70px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+<div class="app">
+<aside id="side"><div class="brand"><div class="logo">R</div>Reception AI</div>
+<nav id="nav"></nav>
+<div class="side-foot"><span class="tag warn">WhatsApp: Not connected</span><button class="btn ghost sm" id="reset">Reset demo data</button><span>Prototype v1. Data lives in this browser tab only and is lost on reload.</span></div></aside>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div class="top"><button id="burger" aria-label="Menu">☰</button><b>Reception AI</b></div>
+<main id="main"></main></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],DAR=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const seed=()=>({
+ biz:{name:'Cedar & Blade Barbershop (fictional)',desc:'A fictional neighbourhood barbershop used for demo purposes only.',address:'123 Example Street, Sample District, Riyadh (fictional address)',
+  hours:DAYS.map((d,i)=>({open:i==5?'16:00':'10:00',close:'22:00',closed:false})),
+  services:[{n:'Classic Haircut',ar:'قص شعر',p:45,dur:'30 min'},{n:'Beard Trim',ar:'تشذيب اللحية',p:25,dur:'15 min'},{n:'Haircut + Beard',ar:'قص شعر مع لحية',p:65,dur:'45 min'},{n:'Kids Haircut',ar:'قص شعر اطفال',p:35,dur:'25 min'},{n:'Hot Towel Shave',ar:'حلاقة بالمنشفة الساخنة',p:40,dur:'30 min'}],
+  faqs:[{q:'Do you take walk-ins?',a:'Walk-ins are welcome when a chair is free, but booking requests are given priority once confirmed by staff.'},{q:'What payment methods do you accept?',a:'We accept cash and card (fictional policy).'},{q:'Is there parking?',a:'There is free street parking near the shop (fictional).'}]},
+ bookings:[{id:1,name:'Khalid A. (sample)',service:'Classic Haircut',date:'2026-10-14',time:'17:00',status:'Pending'},{id:2,name:'Omar S. (sample)',service:'Haircut + Beard',date:'2026-10-14',time:'19:30',status:'Confirmed'},{id:3,name:'Faisal M. (sample)',service:'Beard Trim',date:'2026-10-15',time:'11:00',status:'Pending'},{id:4,name:'Yousef T. (sample)',service:'Kids Haircut',date:'2026-10-13',time:'16:30',status:'Declined'},{id:5,name:'Nasser R. (sample)',service:'Hot Towel Shave',date:'2026-10-16',time:'18:00',status:'Cancelled'}],
+ convs:[{id:1,who:'Khalid A. (sample)',status:'Resolved',human:false,msgs:[['c','How much is a haircut?'],['b','Classic Haircut is SAR 45.'],['c','I want to book tomorrow 5pm'],['b','Request created as Pending. Staff will confirm.']]},
+ {id:2,who:'Sample customer',status:'Needs human',human:true,msgs:[['c','Do you do hair dye?'],['b','I don\'t have that information. I\'ll ask a staff member.']]},
+ {id:3,who:'عميل تجريبي (sample)',status:'Open',human:false,msgs:[['c','متى تفتحون يوم الجمعة؟'],['b','يوم الجمعة: 16:00 – 22:00.']]},
+ {id:4,who:'Faisal M. (sample)',status:'Resolved',human:false,msgs:[['c','Where are you located?'],['b','123 Example Street, Sample District, Riyadh (fictional address)']]}],
+ nextB:6,nextC:5});
+let S=seed(),page='dashboard',selConv=1,sess=null,bookFilter='All';
+const PAGES=[['dashboard','Dashboard','▦'],['chat','AI Receptionist','✦'],['bookings','Bookings','▤'],['convs','Conversations','✉'],['settings','Business Settings','⚙']];
+function toast(m,err){const t=$('#toast');t.textContent=m;t.className='toast show'+(err?' err':'');clearTimeout(toast.h);toast.h=setTimeout(()=>t.className='toast',2600)}
+function go(p){page=p;$('#side').classList.remove('open');render()}
+function renderNav(){const pend=S.bookings.filter(b=>b.status=='Pending').length;$('#nav').innerHTML=PAGES.map(([k,l,i])=>`<button data-go="${k}" class="${page==k?'on':''}"><span>${i}</span>${l}${k=='bookings'&&pend?`<span class="badge">${pend}</span>`:''}</button>`).join('')}
+const stTag=s=>({Pending:'warn',Confirmed:'em',Declined:'bad',Cancelled:'',Open:'blue',Resolved:'em','Needs human':'bad'}[s]||'');
+function render(){renderNav();const m=$('#main');m.scrollTop=0;
+ ({dashboard:vDash,chat:vChat,bookings:vBook,convs:vConv,settings:vSet})[page](m)}
+const banner='<div class="banner">All business, customer and booking data here is <b>fictional sample data</b>. Nothing is stored permanently or shared between users.</div>';
+function vDash(m){const b=S.bookings,c=S.convs,n=s=>b.filter(x=>x.status==s).length,t=b.length||1;
+ m.innerHTML=`<h1>Dashboard</h1><p class="sub">${esc(S.biz.name)}</p>${banner}
+ <div class="grid g4"><div class="card stat"><b>${c.length*3+12}</b><span>Total enquiries (sample)</span></div>
+ <div class="card stat hot"><b>${n('Pending')}</b><span>Pending booking requests</span></div>
+ <div class="card stat"><b>${c.length}</b><span>Conversations</span></div>
+ <div class="card stat"><b>${c.filter(x=>x.human).length}</b><span>Human handoffs needed</span></div></div>
+ <div class="grid g2" style="margin-top:14px"><div class="card"><h2>Booking status</h2><div class="bar"><i style="width:${n('Confirmed')/t*100}%;background:var(--em)"></i><i style="width:${n('Pending')/t*100}%;background:var(--warn)"></i><i style="width:${n('Declined')/t*100}%;background:var(--bad)"></i><i style="width:${n('Cancelled')/t*100}%;background:#6b7570"></i></div>
+ <div class="row wrap">${['Confirmed','Pending','Declined','Cancelled'].map(s=>`<span class="tag ${stTag(s)}">${s} ${n(s)}</span>`).join('')}</div>
+ <p class="sub" style="margin:14px 0 0">WhatsApp channel: <span class="tag warn">Not connected</span> Use the AI Receptionist page to try the chat simulator.</p></div>
+ <div class="card"><h2>Needs a human</h2>${c.filter(x=>x.human).map(x=>`<div class="row" style="justify-content:space-between;padding:6px 0"><span><span class="dot"></span>${esc(x.who)}</span><button class="btn ghost sm" data-openconv="${x.id}">Open</button></div>`).join('')||'<div class="empty">No handoffs waiting. Nice.</div>'}</div></div>`}
+function vBook(m){const list=S.bookings.filter(b=>bookFilter=='All'||b.status==bookFilter);
+ m.innerHTML=`<h1>Bookings</h1><p class="sub">Requests from customers. Staff confirm; the AI never does.</p>
+ <div class="row wrap" style="margin-bottom:14px">${['All','Pending','Confirmed','Declined','Cancelled'].map(f=>`<button class="btn sm ${bookFilter==f?'':'ghost'}" data-bf="${f}">${f}</button>`).join('')}</div>
+ <div class="card scroll">${list.length?`<table><tr><th>Customer</th><th>Service</th><th>Date</th><th>Time</th><th>Status</th></tr>${list.map(b=>`<tr><td>${esc(b.name)}</td><td>${esc(b.service)}</td><td>${esc(b.date)}</td><td>${esc(b.time)}</td><td><select data-bs="${b.id}" style="width:130px">${['Pending','Confirmed','Declined','Cancelled'].map(s=>`<option ${s==b.status?'selected':''}>${s}</option>`).join('')}</select></td></tr>`).join('')}</table>`:'<div class="empty">No bookings with this status yet.</div>'}</div>`}
+function vConv(m){const c=S.convs.find(x=>x.id==selConv)||S.convs[0];
+ m.innerHTML=`<h1>Conversations</h1><p class="sub">Sample and simulator conversations.</p>${S.convs.length?`<div class="conv"><div class="card" style="padding:8px">${S.convs.map(x=>`<div class="ci ${c&&x.id==c.id?'on':''}" data-openconv="${x.id}"><div class="row" style="justify-content:space-between"><b>${esc(x.who)}</b><span class="tag ${stTag(x.status)}">${x.status}</span></div><div style="color:var(--mut);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(x.msgs.at(-1)?.[1]||'')}</div>${x.human?'<span class="tag bad" style="margin-top:4px">Human needed</span>':''}</div>`).join('')}</div>
+ <div class="card"><div class="row wrap" style="justify-content:space-between;margin-bottom:10px"><h2 style="margin:0">${esc(c.who)}</h2><div class="row">${c.human?`<button class="btn sm" data-cact="take">Take over (mark handled)</button>`:`<button class="btn ghost sm" data-cact="flag">Flag for human</button>`}<button class="btn ghost sm" data-cact="resolve">Mark resolved</button></div></div>
+ <div class="msgs" style="padding:0;max-height:60vh">${c.msgs.map(([r,t])=>bub(r,t)).join('')}</div></div></div>`:'<div class="empty">No conversations yet.</div>'}`}
+const bub=(r,t)=>`<div class="m ${r}" dir="auto"><small>${r=='c'?'Customer':r=='s'?'System':'Reception AI'}</small>${esc(t)}</div>`;
+function vSet(m){const B=S.biz;
+ m.innerHTML=`<h1>Business Settings</h1><p class="sub">The receptionist answers only from what you enter here.</p>${banner}
+ <div class="card"><h2>Business</h2><label>Business name *</label><input id="s_name" value="${esc(B.name)}"><label>Description</label><textarea id="s_desc" rows="2">${esc(B.desc)}</textarea><label>Address</label><input id="s_addr" value="${esc(B.address)}"></div>
+ <div class="card" style="margin-top:14px"><h2>Opening hours</h2>${B.hours.map((h,i)=>`<div class="hrs"><span>${DAYS[i]}</span><input type="time" id="ho${i}" value="${h.open}"><input type="time" id="hc${i}" value="${h.close}"><label style="margin:0"><input type="checkbox" id="hx${i}" style="width:auto" ${h.closed?'checked':''}> Closed</label></div>`).join('')}</div>
+ <div class="card" style="margin-top:14px"><h2>Services and prices (SAR)</h2><div id="svc">${B.services.map(svRow).join('')}</div><button class="btn ghost sm" id="addsv">+ Add service</button></div>
+ <div class="card" style="margin-top:14px"><h2>FAQs</h2><div id="faqs">${B.faqs.map(fqRow).join('')}</div><button class="btn ghost sm" id="addfq">+ Add FAQ</button></div>
+ <div class="row" style="margin-top:16px"><button class="btn" id="savebiz">Save changes</button><span style="color:var(--mut);font-size:13px">Saved for this session only.</span></div>`}
+const svRow=s=>`<div class="edrow"><input placeholder="Service name (English)" value="${esc(s.n)}" data-f="n"><input placeholder="Price" type="number" min="0" value="${esc(s.p)}" data-f="p"><input placeholder="Duration" value="${esc(s.dur)}" data-f="dur"><input placeholder="اسم الخدمة (عربي)" value="${esc(s.ar)}" data-f="ar" dir="auto"><button class="btn danger sm" data-del>✕</button></div>`;
+const fqRow=f=>`<div class="faq"><input placeholder="Question" value="${esc(f.q)}" data-f="q"><input placeholder="Answer" value="${esc(f.a)}" data-f="a"><button class="btn danger sm" data-del>✕</button></div>`;
+function saveBiz(){const B=S.biz,name=$('#s_name').value.trim();
+ const svs=[...document.querySelectorAll('#svc .edrow')].map(r=>{const g=f=>r.querySelector(`[data-f=${f}]`).value.trim();return{n:g('n'),p:g('p'),dur:g('dur'),ar:g('ar')}}).filter(s=>s.n||s.p);
+ const fqs=[...document.querySelectorAll('#faqs .faq')].map(r=>({q:r.querySelector('[data-f=q]').value.trim(),a:r.querySelector('[data-f=a]').value.trim()})).filter(f=>f.q||f.a);
+ if(!name)return toast('Business name is required.',1);
+ if(svs.some(s=>!s.n||s.p===''||isNaN(+s.p)||+s.p<0))return toast('Each service needs a name and a price of 0 or more.',1);
+ if(fqs.some(f=>!f.q||!f.a))return toast('Each FAQ needs both a question and an answer.',1);
+ for(let i=0;i<7;i++){if(!$('#hx'+i).checked&&(!$('#ho'+i).value||!$('#hc'+i).value||$('#ho'+i).value>=$('#hc'+i).value))return toast(DAYS[i]+': closing time must be after opening time.',1)}
+ B.name=name;B.desc=$('#s_desc').value.trim();B.address=$('#s_addr').value.trim();
+ B.hours=DAYS.map((_,i)=>({open:$('#ho'+i).value,close:$('#hc'+i).value,closed:$('#hx'+i).checked}));
+ B.services=svs.map(s=>({...s,p:+s.p}));B.faqs=fqs;toast('Settings saved for this session.');renderNav()}
+
+/* ---------- Chat ---------- */
+const isAr=t=>/[\u0600-\u06FF]/.test(t);
+const hrsLine=(i,ar)=>{const h=S.biz.hours[i];return (ar?DAR:DAYS)[i]+': '+(h.closed?(ar?'مغلق':'Closed'):h.open+' – '+h.close)};
+function vChat(m){if(!sess)newSess();
+ m.innerHTML=`<h1>AI Receptionist</h1><p class="sub">Customer chat simulator for ${esc(S.biz.name)}. Replies come only from your configured data. <span class="tag warn">WhatsApp: Not connected</span></p>
+ <div class="chat"><div class="card chatbox"><div class="msgs" id="msgs"></div>
+ <div class="chips">${['What are your opening hours?','How much is a haircut?','Where are you located?','I want to book an appointment','كم سعر قص الشعر؟','أبغى أحجز موعد','Do you do hair dye?'].map(t=>`<button data-chip="${esc(t)}" dir="auto">${esc(t)}</button>`).join('')}</div>
+ <div class="compose"><input id="cin" placeholder="Type as a customer… (English or العربية)" dir="auto" autocomplete="off"><button class="btn" id="csend">Send</button></div></div>
+ <div class="card"><h2>Session</h2><p style="color:var(--mut);font-size:13px">Messages here are simulated. Nothing is sent over WhatsApp.</p>
+ <button class="btn ghost" id="chuman" style="width:100%;margin-bottom:8px">Talk to a human</button><button class="btn ghost" id="cnew" style="width:100%">Start new customer chat</button>
+ <h2 style="margin-top:20px">Booking request</h2><div id="bstate" style="font-size:13px;color:var(--mut)"></div></div></div>`;
+ drawChat()}
+function newSess(){const c={id:S.nextC++,who:'Simulator customer '+(S.nextC-1),status:'Open',human:false,msgs:[]};S.convs.unshift(c);sess={c,b:{},ask:null,hand:false};
+ say('b','Hi! Welcome to '+S.biz.name+'. I can help with services, prices, opening hours, location and booking requests. / أهلاً! كيف أقدر أساعدك؟')}
+function say(r,t){sess.c.msgs.push([r,t])}
+function drawChat(){const el=$('#msgs');if(!el)return;el.innerHTML=sess.c.msgs.map(([r,t])=>bub(r,t)).join('');el.scrollTop=el.scrollHeight;
+ const b=sess.b,L=[['Service',b.service],['Date',b.date],['Time',b.time],['Name',b.name]];$('#bstate').innerHTML=Object.keys(b).length?L.map(([k,v])=>`${k}: ${v?'<b style="color:var(--tx)">'+esc(v)+'</b>':'…'}`).join('<br>'):'None in progress.'}
+function findSvc(t){const l=t.toLowerCase();let best=null;
+ // prefer the longest matching service name
+ S.biz.services.forEach(s=>{[s.n,s.ar].filter(Boolean).forEach(k=>{if(l.includes(k.toLowerCase())&&(!best||k.length>best.k))best={s,k:k.length}})});
+ if(best)return best.s;
+ const w=(/haircut|hair cut|قص/.test(l)?'cut':/beard|لحية|لحيه|تشذيب/.test(l)?'beard':/shave|حلاقة/.test(l)?'shave':/kid|child|اطفال|أطفال/.test(l)?'kid':'');
+ if(!w)return null;
+ const m=S.biz.services.filter(s=>(s.n+' '+s.ar).toLowerCase().match(w=='cut'?/haircut|قص/:w=='beard'?/beard|لحية|تشذيب/:w=='shave'?/shave|حلاقة/:/kid|اطفال|أطفال/));
+ return m.length==1?m[0]:(w=='kid'?m.find(s=>/kid|اطفال/i.test(s.n+s.ar)):null)||(w=='cut'?S.biz.services.find(s=>/^classic/i.test(s.n)):null)||null}
+function findDate(t){const l=t.toLowerCase(),now=new Date(),f=d=>d.toISOString().slice(0,10);let m=l.match(/(\d{4})-(\d{2})-(\d{2})/);
+ const mk=d=>({txt:f(d),dow:d.getDay()});if(m){const d=new Date(m[0]+'T12:00:00');if(!isNaN(d))return mk(d)}
+ const add=n=>{const d=new Date(now);d.setHours(12);d.setDate(d.getDate()+n);return mk(d)};
+ if(/day after tomorrow|بعد غد|بعد بكرة/.test(l))return add(2);
+ if(/tomorrow|tmrw|غدا|غداً|بكرة|بكره/.test(l))return add(1);
+ if(/today|اليوم/.test(l))return add(0);
+ for(let i=0;i<7;i++){if(l.includes(DAYS[i].toLowerCase())||l.includes(DAR[i])||(i==5&&/جمعه/.test(l))){let n=(i-now.getDay()+7)%7||7;return add(n)}}return null}
+function findTime(t){let l=t.toLowerCase().replace(/\d{4}-\d{2}-\d{2}/g,'');
+ const m=l.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm|a\.m\.?|p\.m\.?|ص|م|صباحا|صباحاً|مساء|مساءً|العصر|الظهر)?/g);if(!m)return null;
+ for(const x of m){const r=x.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm|a\.m\.?|p\.m\.?|ص|م|صباحا|صباحاً|مساء|مساءً|العصر|الظهر)?/);let h=+r[1],mi=r[2]||'00',ap=r[3];
+  if(!r[2]&&!ap&&!/at |الساعة|الساعه|@/.test(l))continue;if(h>23||+mi>59)continue;
+  if(ap){const pm=/^(pm|p\.m|م|مساء|العصر|الظهر)/.test(ap);if(pm&&h<12)h+=12;if(!pm&&h==12)h=0}
+  return String(h).padStart(2,'0')+':'+mi}return null}
+function findName(t,asked){let m=t.match(/(?:my name is|i am|i'm|name:|this is|اسمي|انا|أنا)\s+([^\d,.!?\n]{2,30})/i);if(m)return m[1].trim();
+ if(asked){const s=t.trim();if(s.length>=2&&s.length<=30&&!/\d/.test(s)&&!/[?؟]/.test(s))return s}return null}
+const BOOKV=/book|reserve|appointment|احجز|أحجز|حجز|موعد/i,STRONG=/book|reserve|احجز|أحجز|حجز/i;
+function reply(t){const B=S.biz,ar=isAr(t),l=t.toLowerCase(),b=sess.b;
+ const T=(e,a)=>ar?a:e;
+ if(/human|staff|person|agent|manager|بشري|موظف|شخص|مدير|كلم/.test(l)&&!/book/.test(l))return handoff(ar);
+ const inBook=Object.keys(b).length>0,startBook=BOOKV.test(t)&&!(/hours|opening|دوام|ساعات|مواعيد العمل/.test(l)&&!STRONG.test(t));
+ const svc=findSvc(t),dt=findDate(t),tm=findTime(t),nm=findName(t,sess.ask=='name');
+ const filled=!!(inBook&&(svc||dt||tm||nm));
+ if(startBook||filled){
+  if(svc)b.service=svc.n;if(dt)b.date=dt.txt,b.dow=dt.dow;if(tm)b.time=tm;if(nm)b.name=nm;
+  if(b.dow!=null&&B.hours[b.dow].closed){const d=b.dow;delete b.date;delete b.dow;sess.ask='date';return T(`We're closed on ${DAYS[d]}. Which other day would you prefer?`,`نحن مغلقون يوم ${DAR[d]}. أي يوم آخر تفضّل؟`)}
+  if(!b.service){sess.ask='service';return T('Happy to take a booking request. Which service would you like?\n'+B.services.map(s=>'• '+s.n+' (SAR '+s.p+')').join('\n'),'يسعدني استلام طلب الحجز. أي خدمة تريد؟\n'+B.services.map(s=>'• '+(s.ar||s.n)+' ('+s.p+' ريال)').join('\n'))}
+  if(!b.date){sess.ask='date';return T('Which date would you prefer? (e.g. tomorrow, Saturday, or 2026-10-20)','ما التاريخ المفضل لديك؟ (مثال: بكرة، السبت، أو 2026-10-20)')}
+  if(!b.time){sess.ask='time';return T('What time would you prefer? (e.g. 5pm or 17:00)','ما الوقت المفضل؟ (مثال: 5 م أو 17:00)')}
+  if(!b.name){sess.ask='name';return T('Great. May I have your name?','ممتاز. ما اسمك من فضلك؟')}
+  const id=S.nextB++;S.bookings.unshift({id,name:b.name,service:b.service,date:b.date,time:b.time,status:'Pending'});
+  sess.c.who=b.name+' (simulator)';const o=b;sess.b={};sess.ask=null;toast('Booking request created as Pending.');
+  return T(`Thanks ${o.name}! I've sent a booking request for ${o.service} on ${o.date} at ${o.time}. Status: PENDING. This is not confirmed yet; a staff member will confirm or contact you.`,`شكراً ${o.name}! تم إرسال طلب حجز لخدمة ${o.service} بتاريخ ${o.date} الساعة ${o.time}. الحالة: قيد الانتظار. الحجز غير مؤكد بعد وسيقوم أحد الموظفين بالتأكيد أو التواصل معك.`)}
+ if(/hours|opening|open|close|دوام|ساعات|مواعيد|تفتح|تفتحون|تغلق|تقفل|وقت العمل/.test(l)){
+  if(dt)return hrsLine(dt.dow,ar);const wd=DAYS.findIndex((d,i)=>l.includes(d.toLowerCase())||t.includes(DAR[i]));if(wd>=0)return hrsLine(wd,ar);
+  return T('Opening hours:\n','ساعات العمل:\n')+B.hours.map((_,i)=>hrsLine(i,ar)).join('\n')}
+ if(/price|cost|how much|سعر|أسعار|اسعار|كم|بكم|تكلفة|تكلف/.test(l)){
+  if(svc)return ar?`${svc.ar||svc.n}: ${svc.p} ريال سعودي`:`${svc.n}: SAR ${svc.p}`;
+  return T('Our prices:\n','أسعارنا:\n')+B.services.map(s=>ar?`• ${s.ar||s.n}: ${s.p} ريال`:`• ${s.n}: SAR ${s.p}`).join('\n')}
+ if(/where|address|location|map|directions|عنوان|موقع|وين|فين|أين|اين/.test(l))return B.address?T('We are at: '+B.address,'عنواننا: '+B.address):unknown(ar);
+ if(/service|offer|menu|خدمات|خدماتكم|تقدمون/.test(l)||svc)return T('Our services:\n','خدماتنا:\n')+B.services.map(s=>`• ${ar&&s.ar?s.ar:s.n} (${ar?s.p+' ريال':'SAR '+s.p}${s.dur?', '+s.dur:''})`).join('\n');
+ const tok=w=>w.toLowerCase().split(/[^\p{L}]+/u).filter(x=>x.length>=4),tw=new Set(tok(t));let best=null,bs=0;
+ B.faqs.forEach(f=>{const q=tok(f.q);const sc=q.filter(x=>tw.has(x)).length;if(sc>bs&&(sc>=2||(sc>=1&&q.length<=3))){bs=sc;best=f}});
+ if(best)return best.a;
+ if(/^(hi|hello|hey|salam|good (morning|evening))|مرحبا|اهلا|أهلا|السلام|هلا/.test(l))return T('Hello! How can I help you today?','أهلاً وسهلاً! كيف أقدر أساعدك؟');
+ if(/thank|شكرا|شكراً/.test(l))return T("You're welcome!",'العفو!');
+ return unknown(ar,true)}
+function unknown(ar,flag){if(flag){sess.c.human=true;sess.c.status='Needs human'}
+ return ar?'ليس لدي هذه المعلومة. سأسأل أحد الموظفين وسيتواصل معك.':"I don't have that information. I'll ask a staff member and they'll follow up with you."}
+function handoff(ar){if(!sess.hand){sess.hand=true;sess.c.human=true;sess.c.status='Needs human';say('s','Human handoff requested. A staff member has been flagged in Conversations (simulated).')}
+ return ar?'تم تحويل طلبك لأحد الموظفين. سيتواصل معك قريباً.':'I\'ve flagged this conversation for a staff member. They will follow up with you.'}
+function send(txt){txt=txt.trim();if(!txt)return toast('Type a message first.',1);say('c',txt);drawChat();
+ const r=reply(txt);setTimeout(()=>{say('b',r);drawChat();renderNav()},350)}
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{const t=e.target.closest('button,[data-openconv]');if(!t)return;const d=t.dataset;
+ if(d.go)return go(d.go);
+ if(d.openconv){selConv=+d.openconv;return go('convs')}
+ if(d.bf){bookFilter=d.bf;return render()}
+ if(d.chip){$('#cin').value='';return send(d.chip)}
+ if(d.cact){const c=S.convs.find(x=>x.id==selConv);if(d.cact=='take'){c.human=false;c.status='Open';c.msgs.push(['s','Staff took over this conversation (simulated).']);toast('Marked as handled by staff.')}
+  if(d.cact=='flag'){c.human=true;c.status='Needs human';toast('Flagged for a human.')}
+  if(d.cact=='resolve'){c.status='Resolved';c.human=false;toast('Conversation marked resolved.')}return render()}
+ if(t.id=='burger')return $('#side').classList.toggle('open');
+ if(t.id=='reset'){if(confirm('Reset all demo data to the original sample data?')){S=seed();sess=null;selConv=1;bookFilter='All';go('dashboard');toast('Demo data reset.')}return}
+ if(t.id=='csend'){const i=$('#cin');const v=i.value;i.value='';return send(v)}
+ if(t.id=='cnew'){sess=null;toast('New customer chat started.');return render()}
+ if(t.id=='chuman'){say('c','I want to talk to a human');drawChat();const r=handoff(false);setTimeout(()=>{say('b',r);drawChat();renderNav()},300);return}
+ if(t.id=='addsv'){$('#svc').insertAdjacentHTML('beforeend',svRow({n:'',p:'',dur:'',ar:''}));return}
+ if(t.id=='addfq'){$('#faqs').insertAdjacentHTML('beforeend',fqRow({q:'',a:''}));return}
+ if('del'in d){t.parentElement.remove();return}
+ if(t.id=='savebiz')return saveBiz()});
+document.addEventListener('change',e=>{const id=e.target.dataset.bs;if(id){const b=S.bookings.find(x=>x.id==id);b.status=e.target.value;toast('Booking set to '+b.status+'.');renderNav()}});
+document.addEventListener('keydown',e=>{if(e.key=='Enter'&&e.target.id=='cin'){e.preventDefault();const v=e.target.value;e.target.value='';send(v)}});
+render();
+</script></body></html>
